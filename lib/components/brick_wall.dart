@@ -25,9 +25,30 @@ class BrickWall extends Component with HasGameRef<Forge2dGameWorld> {
         columns = columns ?? 1,
         gap = gap ?? 0.1;
 
+  late final List<Color> _colors;
+
+  // Generate a set of colors for the bricks that span a range of colors.
+  // This color generator creates a set of colors spaced across the
+  // color spectrum.
+  static const transparency = 1.0;
+  static const saturation = 0.85;
+  static const lightness = 0.5;
+
+  List<Color> _colorSet(int count) => List<Color>.generate(
+        count,
+        (int index) => HSLColor.fromAHSL(
+          transparency,
+          index / count * 360.0,
+          saturation,
+          lightness,
+        ).toColor(),
+        growable: false,
+      );
+
   // 3
   @override
   Future<void> onLoad() async {
+    _colors = _colorSet(rows);
     await _buildWall();
   }
 
@@ -57,6 +78,7 @@ class BrickWall extends Component with HasGameRef<Forge2dGameWorld> {
         await add(Brick(
           size: brickSize,
           position: brickPosition,
+          color: _colors[i],
         ));
         brickPosition += Vector2(brickSize.width + gap, 0.0);
       }
@@ -82,7 +104,15 @@ class BrickWall extends Component with HasGameRef<Forge2dGameWorld> {
         remove(child);
       }
     }
+    if (children.isEmpty) {
+      gameRef.gameState = GameState.won;
+    }
 
     super.update(dt);
+  }
+
+  Future<void> reset() async {
+    removeAll(children);
+    await _buildWall();
   }
 }

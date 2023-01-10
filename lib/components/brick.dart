@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import '../forge2d_game_world.dart';
 import 'ball.dart';
+import 'package:flame/components.dart';
 
 // 1
 class Brick extends BodyComponent<Forge2dGameWorld> with ContactCallbacks {
   final Size size;
   final Vector2 position;
+  final Color color;
 
   var destroy = false;
 
@@ -21,7 +23,29 @@ class Brick extends BodyComponent<Forge2dGameWorld> with ContactCallbacks {
   Brick({
     required this.size,
     required this.position,
+    required this.color,
   });
+
+  @override
+  void render(Canvas canvas) {
+    if (body.fixtures.isEmpty) {
+      return;
+    }
+
+    final rectangle = body.fixtures.first.shape as PolygonShape;
+
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRect(
+        Rect.fromCenter(
+          center: rectangle.centroid.toOffset(),
+          width: size.width,
+          height: size.height,
+        ),
+        paint);
+  }
 
   // 3
   @override

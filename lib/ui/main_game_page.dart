@@ -29,6 +29,7 @@
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import '../forge2d_game_world.dart';
+import 'overlay_builder.dart';
 
 class MainGamePage extends StatefulWidget {
   const MainGamePage({super.key});
@@ -53,6 +54,10 @@ class MainGameState extends State<MainGamePage> {
         ),
         child: GameWidget(
           game: forge2dGameWorld,
+          overlayBuilderMap: const {
+            'PreGame': OverlayBuilder.preGame,
+            'PostGame': OverlayBuilder.postGame,
+          },
         ),
       ),
     );

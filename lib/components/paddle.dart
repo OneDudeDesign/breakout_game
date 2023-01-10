@@ -4,6 +4,7 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import '../forge2d_game_world.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
+import 'package:flutter/rendering.dart';
 
 class Paddle extends BodyComponent<Forge2dGameWorld> with Draggable {
   final Size size;
@@ -19,6 +20,24 @@ class Paddle extends BodyComponent<Forge2dGameWorld> with Draggable {
   MouseJoint? _mouseJoint;
   Vector2 dragStartPosition = Vector2.zero();
   Vector2 dragAccumlativePosition = Vector2.zero();
+
+  @override
+  void render(Canvas canvas) {
+    final shape = body.fixtures.first.shape as PolygonShape;
+
+    final paint = Paint()
+      ..color = const Color.fromARGB(255, 80, 80, 228)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRect(
+        Rect.fromLTRB(
+          shape.vertices[0].x,
+          shape.vertices[0].y,
+          shape.vertices[2].x,
+          shape.vertices[2].y,
+        ),
+        paint);
+  }
 
   @override
   void onMount() {
@@ -136,5 +155,11 @@ class Paddle extends BodyComponent<Forge2dGameWorld> with Draggable {
       ..restitution = 1.0);
 
     return paddleBody;
+  }
+
+  void reset() {
+    body.setTransform(position, angle);
+    body.angularVelocity = 0.0;
+    body.linearVelocity = Vector2.zero();
   }
 }
